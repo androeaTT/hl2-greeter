@@ -24,9 +24,32 @@ Rectangle {
     }
 
 
-    Borders {
-        color1: "#555"
-        reverse: !buttonMouseArea.pressed
+    Rectangle {
+        width: root.width
+        height: 1
+        color: buttonMouseArea.pressed ? "#aa2f2f2f" : "#aaF6F6F6"
+        anchors.top: parent.top
+    }
+    
+    Rectangle {
+        width: 1
+        height: root.height
+        color: buttonMouseArea.pressed ? "#aa2f2f2f" : "#aaF6F6F6"
+        anchors.left: parent.left
+    }
+    
+    Rectangle {
+        width: 1
+        height: root.height
+        color: buttonMouseArea.pressed ? "#aaF6F6F6" : "#aa2f2f2f" 
+        anchors.right: parent.right
+    }
+    
+    Rectangle {
+        width: root.width
+        height: 1
+        color: buttonMouseArea.pressed ? "#aaF6F6F6" : "#aa2f2f2f" 
+        anchors.bottom: parent.bottom
     }
     
     MouseArea {

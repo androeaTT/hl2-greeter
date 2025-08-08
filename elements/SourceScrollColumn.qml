@@ -8,14 +8,17 @@ Rectangle {
     color: "#22000000"
 
     default property alias content: contentPlace.data
-    property int scrollBarWidth: 14
+    property int scrollBarWidth: 16
 
 
     ScrollView {
+        id: scroll
+
         anchors.left: parent.left
         anchors.top: parent.top
-        width: parent.width - scrollBarWidth
+        anchors.right: scrollBarBox.left
         height: parent.height
+
 
         clip: true
 
@@ -45,17 +48,45 @@ Rectangle {
 
             }
 
-            Borders {
-                id: upBorders
-                reverse: !topButtonMouseArea.pressed
-                color1: "#555"
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: topButtonMouseArea.pressed ? "#aa2f2f2f" : "#aaF6F6F6"
+                anchors.top: parent.top
+            }
+            
+            Rectangle {
+                width: 1
+                height: parent.height
+                color: topButtonMouseArea.pressed ? "#aa2f2f2f" : "#aaF6F6F6"
+                anchors.left: parent.left
+            }
+            
+            Rectangle {
+                width: 1
+                height: parent.height
+                color: topButtonMouseArea.pressed ? "#aaF6F6F6" : "#aa2f2f2f" 
+                anchors.right: parent.right
+            }
+            
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: topButtonMouseArea.pressed ? "#aaF6F6F6" : "#aa2f2f2f" 
+                anchors.bottom: parent.bottom
             }
 
             MouseArea {
                 id: topButtonMouseArea
                 z: parent.z + 1
                 anchors.fill: parent
-                onPressed: {}
+                onPressed: {
+                    if (slider.y - 10 >= 0) {
+                        slider.y = slider.y - 10
+                    } else {
+                        slider.y = 0
+                    }
+                }
             }
         }
         Rectangle {
@@ -66,24 +97,55 @@ Rectangle {
             anchors.left: parent.left
             anchors.right: parent.right
             
-            color: "#00000000"
+            color: "#cc9C9B9B"
 
             Rectangle {
                 id: slider
-                anchors.left: parent.left
-                anchors.right: parent.right
-                //temp
-                height: 200
-                color: "#aa9B9B9B"
 
+                width: scrollBarWidth
+                height: scroll.height / (contentPlace.height / sliderBox.height)
+                color: "#9B9B9B"
+
+                onYChanged: {
+                    console.log("OwO: " + y)
+                }
+
+                Rectangle {
+                    width: parent.width
+                    height: 1
+                    color: "#aaF6F6F6"
+                    anchors.top: parent.top
+                }
+                
+                Rectangle {
+                    width: 1
+                    height: parent.height
+                    color: "#aaF6F6F6"
+                    anchors.left: parent.left
+                }
+                
+                Rectangle {
+                    width: 1
+                    height: parent.height
+                    color: "#aa2f2f2f"
+                    anchors.right: parent.right
+                }
+                
+                Rectangle {
+                    width: parent.width
+                    height: 1
+                    color: "#aa2f2f2f"
+                    anchors.bottom: parent.bottom
+                }
 
 
                 MouseArea {
                     id: sliderMArea
 
-                    drag.target: parent
-                    drag.axis: YAxis
-                    drag.minimumY: sliderBox.y
+                    drag.target: slider
+                    drag.axis: Drag.YAxis
+                    drag.minimumY: upButton.y
+                    drag.maximumY: downButton.y - downButton.height - height
 
 
                     anchors.fill: parent
@@ -115,42 +177,86 @@ Rectangle {
             Rectangle {
                 width: parent.width
                 height: 1
-                color: bottomButtonMouseArea.pressed ? "#555" : "#aaa" 
+                color: downButtonMouseArea.pressed ? "#aa2f2f2f" : "#aaF6F6F6"
                 anchors.top: parent.top
             }
             
             Rectangle {
                 width: 1
                 height: parent.height
-                color: bottomButtonMouseArea.pressed ? "#555" : "#aaa" 
+                color: downButtonMouseArea.pressed ? "#aa2f2f2f" : "#aaF6F6F6"
                 anchors.left: parent.left
             }
             
             Rectangle {
                 width: 1
                 height: parent.height
-                color: bottomButtonMouseArea.pressed ? "#aaa" : "#555" 
+                color: downButtonMouseArea.pressed ? "#aaF6F6F6" : "#aa2f2f2f" 
                 anchors.right: parent.right
             }
             
             Rectangle {
                 width: parent.width
                 height: 1
-                color: bottomButtonMouseArea.pressed ? "#aaa" : "#555" 
+                color: downButtonMouseArea.pressed ? "#aaF6F6F6" : "#aa2f2f2f" 
                 anchors.bottom: parent.bottom
             }
 
             MouseArea {
-                id: bottomButtonMouseArea
+                id: downButtonMouseArea
                 z: parent.z + 1
                 anchors.fill: parent
-                onPressed: {}
+                onPressed: {
+                    if (slider.y + 10 <= 245) {
+                        slider.y = slider.y + 10
+                    } else {
+                        slider.y = 245
+                    }
+                }
             }
         }
     }
 
+    Binding {
+        target: slider
+        property: "y"
+        value: (scroll.children[0].contentY / (contentPlace.height - scroll.height)) * (sliderBox.height - slider.height)
+        when: !sliderMArea.drag.active 
+    }
+
+    Binding {
+        target: scroll.children[0]
+        property: "contentY"
+        value: (slider.y / (sliderBox.height - slider.height)) * (contentPlace.height - scroll.height)
+        when: sliderMArea.drag.active // Only when dragging
+    }
 
 
-
-    Borders {}
+    Rectangle {
+        width: parent.width
+        height: 1
+        color: "#aaF6F6F6"
+        anchors.top: parent.top
+    }
+    
+    Rectangle {
+        width: 1
+        height: parent.height
+        color: "#aaF6F6F6"
+        anchors.left: parent.left
+    }
+    
+    Rectangle {
+        width: 1
+        height: parent.height
+        color: "#aa2f2f2f"
+        anchors.right: parent.right
+    }
+    
+    Rectangle {
+        width: parent.width
+        height: 1
+        color: "#aa2f2f2f"
+        anchors.bottom: parent.bottom
+    }
 }
