@@ -21,6 +21,7 @@ Rectangle {
 
 
         clip: true
+        ScrollBar.vertical.policy: ScrollBar.AlwaysOff
 
         Column {
             id: contentPlace
@@ -103,7 +104,9 @@ Rectangle {
                 id: slider
 
                 width: scrollBarWidth
-                height: scroll.height / (contentPlace.height / sliderBox.height)
+                height: scroll.height / (contentPlace.height / sliderBox.height) > sliderBox.height ? 
+                    sliderBox.height : 
+                    scroll.height / (contentPlace.height / sliderBox.height)
                 color: "#9B9B9B"
 
                 onYChanged: {
@@ -221,14 +224,12 @@ Rectangle {
         target: slider
         property: "y"
         value: (scroll.children[0].contentY / (contentPlace.height - scroll.height)) * (sliderBox.height - slider.height)
-        when: !sliderMArea.drag.active 
     }
 
     Binding {
         target: scroll.children[0]
         property: "contentY"
         value: (slider.y / (sliderBox.height - slider.height)) * (contentPlace.height - scroll.height)
-        when: sliderMArea.drag.active // Only when dragging
     }
 
 

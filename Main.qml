@@ -198,14 +198,7 @@ Item {
 
             SourceScrollColumn {
                 //debug
-                Repeater {
-                    model: 42
-                    Rectangle {
-                        width: 100; height: 40
-                        border.width: 1
-                        color: "yellow"
-                    }
-                }
+                
             }
         }
     }
