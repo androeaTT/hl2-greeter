@@ -138,6 +138,7 @@ Item {
             visible: false
             width: 620
             height: 320
+            insideMargin: 20
 
             basez: parent.z + 1
             x: root.width / 2 - 310
@@ -187,8 +188,9 @@ Item {
         SourceWindow {
             id: loadGameWindow
             visible: false
-            width: 450
-            height: 400
+            width: 480
+            height: 450
+            insideMargin: 5
 
             basez: parent.z + 1
             x: root.width / 2 - this.width / 2
@@ -196,9 +198,37 @@ Item {
 
             title: "LOAD GAME"
 
-            SourceScrollColumn {
-                //debug
-                
+            Column {
+                anchors.fill: parent
+
+                Item {
+                    id: loadTextBox
+
+                    height: 20
+
+                    Text {
+                        id: loadtext   
+
+                        anchors.bottom: parent.bottom
+                        anchors.left: parent.left
+                        anchors.right: parent.right  
+
+                        font.pixelSize: 14
+                        font.family: "Trebuchet MS"
+                        color: "#e0e0e0"
+                        text: "Select a saved game in the list below, then click 'Load game'"
+                    }
+                }
+
+                SourceScrollColumn {
+                    id: loadscrollcol
+
+                    anchors.topMargin: 10
+                    anchors.top: loadTextBox.bottom
+                    anchors.bottom: parent.bottom
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                }
             }
         }
     }

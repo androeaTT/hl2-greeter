@@ -4,7 +4,6 @@ import QtQuick.VectorImage
 
 Rectangle {
     id: root 
-    anchors.fill: parent
     color: "#22000000"
 
     default property alias content: contentPlace.data
@@ -236,28 +235,28 @@ Rectangle {
     Rectangle {
         width: parent.width
         height: 1
-        color: "#aaF6F6F6"
+        color: "#aa2f2f2f"
         anchors.top: parent.top
     }
     
     Rectangle {
         width: 1
         height: parent.height
-        color: "#aaF6F6F6"
+        color: "#aa2f2f2f"
         anchors.left: parent.left
     }
     
     Rectangle {
         width: 1
         height: parent.height
-        color: "#aa2f2f2f"
+        color: "#aaF6F6F6"
         anchors.right: parent.right
     }
     
     Rectangle {
         width: parent.width
         height: 1
-        color: "#aa2f2f2f"
+        color: "#aaF6F6F6"
         anchors.bottom: parent.bottom
     }
 }

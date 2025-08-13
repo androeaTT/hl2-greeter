@@ -16,6 +16,7 @@ Rectangle {
     property bool focused: false
     property Item windowsSurface: root.parent.parent
     property Item windowsPlace: root.parent
+    property alias insideMargin: contentBox.anchors.margins
     default property alias content: contentBox.data
     
     
@@ -78,8 +79,11 @@ Rectangle {
 
         Column {
             id: contentBox
-            anchors.fill: parent
-            anchors.margins: 20
+            
+            anchors.top: titleItem.bottom
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            anchors.right: parent.right
         }
     }
     MouseArea {
