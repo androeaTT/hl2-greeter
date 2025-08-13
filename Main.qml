@@ -228,6 +228,19 @@ Item {
                     anchors.bottom: parent.bottom
                     anchors.left: parent.left
                     anchors.right: parent.right
+
+                    Repeater {
+                        model: userModel
+                            
+                        LoadGameUserInstance {
+                            required property int index
+
+                            userid: index
+                            realName: modelData.realName
+                            name: modelData.name
+                            
+                        }
+                    }
                 }
             }
         }
