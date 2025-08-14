@@ -115,7 +115,9 @@ Item {
     function get_username(index) {
         const role = Qt.UserRole + 1
         const qtIndex = userModel.index( index, 0 )
-        return userModel.data(qtIndex, role)
+        const username = userModel.data(qtIndex, role)
+        
+        return username[0].toUpperCase() + username.slice(1)
     }
 
     function get_realName(index) {
