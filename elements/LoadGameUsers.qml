@@ -1,4 +1,4 @@
-// Theme for sddm with half-life 2 gui style
+// Theme for SDDM with Half-Life 2 GUI style
 // Copyright (C) 2025  androeaTT
 //
 // This program is free software: you can redistribute it and/or modify
@@ -30,7 +30,7 @@ Column {
         for (var i = 0; i < root.children.length; i++) {
             const element = root.children[i]
             const staticI = i
-            
+
             element.changeFocus.connect( function() {
                 root.children[focusedIndex].focused = false
                 element.focused = true
