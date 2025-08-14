@@ -30,8 +30,10 @@ Rectangle {
     property int userid: 0
     property alias name: nameItem.text
     property alias realName: realItem.text
+    property bool focused: false 
+    signal changeFocus()
 
-    property string textColor: "#ccc"
+    property string textColor: focused ? "#ff9c00" : "#ccc"
     property int fontSize: 11
 
     function getRandomInt(min, max) {
@@ -64,7 +66,7 @@ Rectangle {
             Rectangle {
                 id: imageBox
 
-                color: "#000"
+                color: focused ? "#ff9c00" : "#000"
 
                 anchors.centerIn: parent
 
@@ -128,5 +130,13 @@ Rectangle {
                 }
             }
         }
+    }
+
+    MouseArea {
+        id: area
+        
+        anchors.fill: parent
+
+        onClicked: { changeFocus() }
     }
 }

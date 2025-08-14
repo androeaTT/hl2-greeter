@@ -267,23 +267,25 @@ Item {
                     anchors.left: parent.left
                     anchors.right: parent.right
 
-                    spacing: 20
+                    LoadGameUsers {
+                        id: loadUsers
 
-                    Repeater {
-                        id: repeat
-                        model: userModel
-                            
-                        LoadGameUserInstance {
-                            required property int index
+                        spacing: 20
 
-                            userid: index
-                            realName: get_realName(index)
-                            name: get_username(index)
-                            Component.onCompleted: {
-                                console.log("////////////////////////////////OwOname: " + get_realName(index) )
+                        Repeater {
+                            id: repeat
+                            model: userModel
+
+                            LoadGameUserInstance {
+                                required property int index
+
+                                userid: index
+                                realName: get_realName(index)
+                                name: get_username(index)
                             }
                         }
                     }
+
                 }
             }
         }
