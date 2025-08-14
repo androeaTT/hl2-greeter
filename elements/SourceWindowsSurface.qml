@@ -3,12 +3,13 @@ import QtQuick.Controls
 
 Item {
     id: root
+
     anchors.fill: parent
 
-    default property alias content: windowsPlace.data
     property int focusedWindow: 0
     property int visibleWindows: 0
     property alias windows: windowsPlace.children
+    default property alias content: windowsPlace.data
 
     onVisibleWindowsChanged: {
         if (visibleWindows >= 1) {
@@ -37,6 +38,7 @@ Item {
 
     Rectangle {
         id: windowsPlace
+        
         color: "#00000000"
         anchors.fill: parent
     }

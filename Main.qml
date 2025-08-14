@@ -9,38 +9,41 @@ import "elements"
 Item {
     id: root
 
+    ////////////////////////
+    //      Invisible     //
+    ////////////////////////
 
-    TextConstants {
+    TextConstants { // sddm stuff
         id: textConstants
     }
 
-    Rectangle {
-        id: backgroundRect
-        anchors.fill: parent
-        color: "black" 
-        z: 0 
-
-    }
-
-    MediaPlayer {
-        id: hoverPlayer
-        source: "assets/btns/buttonrollover.mp3"
-        audioOutput: AudioOutput {}
-    }
-
-    MediaPlayer {
+    MediaPlayer { // audio player for button click 
         id: clickPlayer
+
         source: "assets/btns/buttonclickrelease.mp3"
         audioOutput: AudioOutput {}
     }
 
-    MediaPlayer {
+    Timer { // timer for loading delay 
+        id: timerGui
+
+        interval: 2000
+        running: false
+        repeat: false 
+
+        onTriggered: {
+            start_gui()
+        }
+    }
+
+    MediaPlayer { //intro and background player
         id: player
+
         source: "assets/valve.mp4"
         videoOutput: background
         autoPlay: true
-        audioOutput: AudioOutput {}
 
+        audioOutput: AudioOutput {}
         onPlayingChanged: {
             if (playing == false) {
                 if ( player.source.toString().endsWith("valve.mp4") ) {
@@ -50,28 +53,20 @@ Item {
         }
     }
 
-    VideoOutput {
-        id: background
+    Rectangle { // white corners fix
         anchors.fill: parent
-        focus: true
-        z: 1
-        
-        Keys.onPressed: (event) => {
-            if ( event.key === Qt.Key_Space) {
-                if ( player.source.toString().endsWith("valve.mp4") ) {
-                    root.start_loading()
-                }  
-            }
-        }
-
-        
+        color: "black" 
+        z: 0 
     }
+
+    ////////////////////////
+    //      Functions     //
+    ////////////////////////
 
     function login() {
 
     }
-
-
+    
     function getRandomInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min
     }
@@ -88,62 +83,77 @@ Item {
         windows.showWindow(buttonId)
     } 
 
-    FastBlur {
+    function start_loading() {
+        player.stop()
+        player.source = "assets/bgdir/" + getRandomInt(1, 7) + ".mp4"
+        player.pause()
+        bgBlur.visible = true
+        loadingBox.visible = true
+        timerGui.running = true
+    }
+    
+    function start_gui() {
+        bgBlur.visible = false
+        loadingBox.visible = false
+        player.play()
+        player.loops = 99999
+        mainMenuButtonBox.visible = true
+    }
+
+    ////////////////////////
+    //       Layout       //
+    ////////////////////////
+
+
+    VideoOutput { // Background video and intro output
+        id: background
+
+        anchors.fill: parent
+        z: 1
+
+        focus: true
+        
+        Keys.onPressed: (event) => {
+            if ( event.key === Qt.Key_Space) {
+                if ( player.source.toString().endsWith("valve.mp4") ) {
+                    root.start_loading()
+                }  
+            }
+        }
+    }
+
+    FastBlur { // Blur when loading
         id: bgBlur
 
-        source: background
-        radius: 42
         anchors.fill: parent
-        visible: false
         z: 2
-    }
 
-    Rectangle {
-        width: 100
-        height: 50
-        id: loadingBox
+        source: background
         visible: false
-        color: "#000"
-        radius: 10
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        anchors.margins: 20
-        z: 3
-
-        Text {
-            anchors.centerIn: parent
-            font.pixelSize: 14
-            color: "#fff"
-            text: "Loading.."
-        }
-
+        radius: 42
     }
+    
+    LoadingBox { id: loadingBox }
 
-    Timer {
-            id: timerGui
-            interval: 2000
-            running: false
-            repeat: false 
-            onTriggered: {
-                start_gui()
-            }
-    }
 
+    // Windows surface
     SourceWindowsSurface {
         id: windows
+
         z: 5
 
         SourceWindow {
             id: newGameWindow
-            visible: false
+
             width: 620
             height: 320
-            insideMargin: 20
 
             basez: parent.z + 1
             x: root.width / 2 - 310
             y: root.height / 2 - 130
 
+            visible: false
+            insideMargin: 20
             title: "NEW GAME"
 
             Image {
@@ -157,9 +167,9 @@ Item {
 
             NewGameUsers {}
 
-
             RowLayout {
                 spacing: 12
+
                 anchors.bottom: parent.bottom
                 anchors.right: parent.right
 
@@ -173,6 +183,7 @@ Item {
                         login()
                     }
                 }
+
                 //cancel button
                 SourceButton {
                     id: cancelNewGameButton
@@ -187,15 +198,16 @@ Item {
 
         SourceWindow {
             id: loadGameWindow
-            visible: false
-            width: 480
-            height: 450
-            insideMargin: 5
 
             basez: parent.z + 1
             x: root.width / 2 - this.width / 2
             y: root.height / 2 - this.height / 2
 
+            width: 480
+            height: 450
+            
+            visible: false
+            insideMargin: 5
             title: "LOAD GAME"
 
             Column {
@@ -223,11 +235,13 @@ Item {
                 SourceScrollColumn {
                     id: loadscrollcol
 
-                    anchors.topMargin: 10
+                    contAnchors.topMargin: 10
                     anchors.top: loadTextBox.bottom
                     anchors.bottom: parent.bottom
                     anchors.left: parent.left
                     anchors.right: parent.right
+
+                    spacing: 20
 
                     Repeater {
                         model: userModel
@@ -238,7 +252,6 @@ Item {
                             userid: index
                             realName: modelData.realName
                             name: modelData.name
-                            
                         }
                     }
                 }
@@ -246,231 +259,75 @@ Item {
         }
     }
 
-    ///Main menu buttons
+    /// Main menu
     Rectangle {
         id: mainMenuButtonBox
-        visible: false
+
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.left
         anchors.leftMargin: 80
-        z:3
+        
         height: buttonsColumn.implicitHeight
         width: 700
+        z:3
+        
+        visible: false
         color: "transparent"
         
 
         Column {
-            anchors.fill: parent
             id: buttonsColumn
+
+            anchors.fill: parent
+            
             spacing: 16
 
             Image {
-                source: "assets/menuLogo.png"
                 width: 568
                 height: 42
+
+                source: "assets/menuLogo.png"
             }
 
-            Rectangle {
-                id: spacerBtn0
-                width: 100
-                height: 16
-                color: "transparent"
-                Text {
-                    color: mouse1.hovered ? "#d6d6d6" : "white"
-                    font.family: "Trebuchet MS"
-                    font.pixelSize: 16
-                    text: " "
-                }
+            MainMenuButton {
+                soundEnabled: false
+                text: " "
             }
 
-            Rectangle {
-                anchors.topMargin: 80
-                id: newGameBtn
-                width: 100
-                height: 16
-                color: "transparent"
-                Text {
-                    color: mouse2.hovered ? "#d6d6d6" : "white"
-                    font.family: "Trebuchet MS"
-                    font.pixelSize: 16
-                    text: "NEW GAME"
-                }
+            MainMenuButton {
+                text: "NEW GAME"
 
-                MouseArea {
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    onEntered: { root.hoverSound() }
-                    onPressed: { root.buttonClick(0) }
-                }
-
-                HoverHandler {
-                    id: mouse2
-                    acceptedDevices: PointerDevice.AllDevices 
-                    onGrabChanged: {
-                        if (hovered) {
-                            hoverSound()
-                        }
-                    }
-                }
+                onClicked: { root.buttonClick(0) }
             }
 
-            Rectangle {
-                id: loadGameBtn
-                width: 100
-                height: 16
-                color: "transparent"
-                Text {
-                    color: mouse3.hovered ? "#d6d6d6" : "white"
-                    font.family: "Trebuchet MS"
-                    font.pixelSize: 16
-                    text: "LOAD GAME"
-                }
+            MainMenuButton {
+                text: "LOAD GAME"
 
-                MouseArea {
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    onEntered: { root.hoverSound() }
-                    onPressed: { root.buttonClick(1) }
-                }
-
-                HoverHandler {
-                    id: mouse3
-                    acceptedDevices: PointerDevice.AllDevices 
-                    onGrabChanged: {
-                        if (hovered) {
-                            hoverSound()
-                        }
-                    }
-                }
+                onClicked: { root.buttonClick(1) }
             }
 
-            Rectangle {
-                id: achievmentsBtn
-                width: 100
-                height: 16
-                color: "transparent"
-                Text {
-                    color: mouse4.hovered ? "#d6d6d6" : "white"
-                    font.family: "Trebuchet MS"
-                    font.pixelSize: 16
-                    text: "ACHIEVEMENTS"
-                }
+            MainMenuButton {
+                text: "ACHIEVMENTS"
 
-                MouseArea {
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    onEntered: { root.hoverSound() }
-                    onPressed: { root.buttonClick(2) }
-                }
-
-                HoverHandler {
-                    id: mouse4
-                    acceptedDevices: PointerDevice.AllDevices 
-                    onGrabChanged: {
-                        if (hovered) {
-                            hoverSound()
-                        }
-                    }
-                }
+                onClicked: { root.buttonClick(2) }
             }
 
-            Rectangle {
-                id: spacerBtn1
-                width: 100
-                height: 16
-                color: "transparent"
-                Text {
-                    color: mouse5.hovered ? "#d6d6d6" : "white"
-                    font.family: "Trebuchet MS"
-                    font.pixelSize: 16
-                    text: " "
-                }
+            MainMenuButton {
+                soundEnabled: false
+                text: " "
             }
 
-            Rectangle {
-                id: optionsBtn
-                width: 100
-                height: 16
-                color: "transparent"
-                Text {
-                    color: mouse6.hovered ? "#d6d6d6" : "white"
-                    font.family: "Trebuchet MS"
-                    font.pixelSize: 16
-                    text: "OPTIONS"
-                }
+            MainMenuButton {
+                text: "OPTIONS"
 
-                MouseArea {
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    onEntered: { root.hoverSound() }
-                    onPressed: { root.buttonClick(3) }
-                }
-
-                HoverHandler {
-                    id: mouse6
-                    acceptedDevices: PointerDevice.AllDevices 
-                    onGrabChanged: {
-                        if (hovered) {
-                            hoverSound()
-                        }
-                    }
-                }
+                onClicked: { root.buttonClick(3) }
             }
 
-            Rectangle {
-                id: quickBtn
-                width: 100
-                height: 16
-                color: "transparent"
-                Text {
-                    color: mouse7.hovered ? "#d6d6d6" : "white"
-                    font.family: "Trebuchet MS"
-                    font.pixelSize: 16
-                    text: "QUIT"
-                }
+            MainMenuButton {
+                text: "QUIT"
 
-                MouseArea {
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    onEntered: { root.hoverSound() }
-                    onPressed: { root.buttonClick(4) }
-                }
-
-                HoverHandler {
-                    id: mouse7
-                    acceptedDevices: PointerDevice.AllDevices 
-                    onGrabChanged: {
-                        if (hovered) {
-                            hoverSound()
-                        }
-                    }
-                }
+                onClicked: { root.buttonClick(4) }
             }
-
         }
-
-    }
-    
-    
-
-
-    function start_loading() {
-        player.stop()
-        player.source = "assets/bgdir/" + getRandomInt(1, 7) + ".mp4"
-        player.pause()
-        bgBlur.visible = true
-        loadingBox.visible = true
-        timerGui.running = true
-        
-        
-    }
-    function start_gui() {
-        bgBlur.visible = false
-        loadingBox.visible = false
-        player.play()
-        player.loops = 99999
-        mainMenuButtonBox.visible = true
-
-        
     }
 }

@@ -18,6 +18,7 @@ ColumnLayout {
         id: realUsernameItem
         
         anchors.leftMargin: 2
+
         font.weight: 900
         font.pixelSize: 10
         font.family: "Trebuchet MS"
@@ -28,6 +29,7 @@ ColumnLayout {
         id: usernameItem
         
         anchors.leftMargin: 2
+
         font.weight: 900
         font.pixelSize: 10
         font.family: "Trebuchet MS"
@@ -47,8 +49,10 @@ ColumnLayout {
         }
     }
     MouseArea {
-        z: root.z + 1
         anchors.fill: parent
+
+        z: root.z + 1
+        
         onPressed: {
             clicked()
         }

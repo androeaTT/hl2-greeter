@@ -8,6 +8,8 @@ Rectangle {
 
     default property alias content: contentPlace.data
     property int scrollBarWidth: 16
+    property alias spacing: contentPlace.spacing
+    property alias contAnchors: contentPlace.anchors
 
 
     ScrollView {
@@ -16,8 +18,8 @@ Rectangle {
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.right: scrollBarBox.left
-        height: parent.height
 
+        height: parent.height
 
         clip: true
         ScrollBar.vertical.policy: ScrollBar.AlwaysOff
@@ -30,17 +32,21 @@ Rectangle {
 
     Item {
         id: scrollBarBox
+
         anchors.right: parent.right
+
         height: parent.height
         width: scrollBarWidth
 
         Rectangle { //top button
             id: upButton
 
-            color: "#22000000"
+            anchors.top: parent.top
+
             height: scrollBarWidth
             width: scrollBarWidth
-            anchors.top: parent.top
+
+            color: "#22000000"
 
             VectorImage {
                 source: "../assets/upArrow.svg"
@@ -51,35 +57,46 @@ Rectangle {
             Rectangle {
                 width: parent.width
                 height: 1
-                color: topButtonMouseArea.pressed ? "#aa2f2f2f" : "#aaF6F6F6"
+
                 anchors.top: parent.top
-            }
-            
-            Rectangle {
-                width: 1
-                height: parent.height
+
                 color: topButtonMouseArea.pressed ? "#aa2f2f2f" : "#aaF6F6F6"
-                anchors.left: parent.left
             }
             
             Rectangle {
                 width: 1
                 height: parent.height
-                color: topButtonMouseArea.pressed ? "#aaF6F6F6" : "#aa2f2f2f" 
+
+                anchors.left: parent.left
+
+                color: topButtonMouseArea.pressed ? "#aa2f2f2f" : "#aaF6F6F6"
+            }
+            
+            Rectangle {
+                width: 1
+                height: parent.height
+
                 anchors.right: parent.right
+
+                color: topButtonMouseArea.pressed ? "#aaF6F6F6" : "#aa2f2f2f" 
             }
             
             Rectangle {
                 width: parent.width
                 height: 1
-                color: topButtonMouseArea.pressed ? "#aaF6F6F6" : "#aa2f2f2f" 
+
                 anchors.bottom: parent.bottom
+
+                color: topButtonMouseArea.pressed ? "#aaF6F6F6" : "#aa2f2f2f" 
             }
 
             MouseArea {
                 id: topButtonMouseArea
-                z: parent.z + 1
+
                 anchors.fill: parent
+
+                z: parent.z + 1
+
                 onPressed: {
                     if (slider.y - 10 >= 0) {
                         slider.y = slider.y - 10
@@ -115,29 +132,37 @@ Rectangle {
                 Rectangle {
                     width: parent.width
                     height: 1
-                    color: "#aaF6F6F6"
+                    
                     anchors.top: parent.top
-                }
-                
-                Rectangle {
-                    width: 1
-                    height: parent.height
+                    
                     color: "#aaF6F6F6"
-                    anchors.left: parent.left
                 }
                 
                 Rectangle {
                     width: 1
                     height: parent.height
-                    color: "#aa2f2f2f"
+                    
+                    anchors.left: parent.left
+                    
+                    color: "#aaF6F6F6"
+                }
+                
+                Rectangle {
+                    width: 1
+                    height: parent.height
+                    
                     anchors.right: parent.right
+                    
+                    color: "#aa2f2f2f"
                 }
                 
                 Rectangle {
                     width: parent.width
                     height: 1
-                    color: "#aa2f2f2f"
+                    
                     anchors.bottom: parent.bottom
+                    
+                    color: "#aa2f2f2f"
                 }
 
 
@@ -151,8 +176,10 @@ Rectangle {
 
 
                     anchors.fill: parent
+
                     z: root.z + 6
                     propagateComposedEvents: true
+
                     onPressed: () => {
                         
                         mouse.accepted = false
@@ -165,10 +192,12 @@ Rectangle {
         Rectangle { //bottom button
             id: downButton
 
-            color: "#22000000"
-            height: scrollBarWidth
-            width: scrollBarWidth
             anchors.bottom: parent.bottom
+            
+            width: scrollBarWidth
+            height: scrollBarWidth
+
+            color: "#22000000"
 
             VectorImage {
                 source: "../assets/downArrow.svg"
@@ -179,35 +208,46 @@ Rectangle {
             Rectangle {
                 width: parent.width
                 height: 1
-                color: downButtonMouseArea.pressed ? "#aa2f2f2f" : "#aaF6F6F6"
+
                 anchors.top: parent.top
-            }
-            
-            Rectangle {
-                width: 1
-                height: parent.height
+                
                 color: downButtonMouseArea.pressed ? "#aa2f2f2f" : "#aaF6F6F6"
-                anchors.left: parent.left
             }
             
             Rectangle {
                 width: 1
                 height: parent.height
-                color: downButtonMouseArea.pressed ? "#aaF6F6F6" : "#aa2f2f2f" 
+                
+                anchors.left: parent.left
+                
+                color: downButtonMouseArea.pressed ? "#aa2f2f2f" : "#aaF6F6F6"
+            }
+            
+            Rectangle {
+                width: 1
+                height: parent.height
+
                 anchors.right: parent.right
+                
+                color: downButtonMouseArea.pressed ? "#aaF6F6F6" : "#aa2f2f2f" 
             }
             
             Rectangle {
                 width: parent.width
                 height: 1
-                color: downButtonMouseArea.pressed ? "#aaF6F6F6" : "#aa2f2f2f" 
+                
                 anchors.bottom: parent.bottom
+                
+                color: downButtonMouseArea.pressed ? "#aaF6F6F6" : "#aa2f2f2f" 
             }
 
             MouseArea {
                 id: downButtonMouseArea
-                z: parent.z + 1
+
                 anchors.fill: parent
+
+                z: parent.z + 1
+                
                 onPressed: {
                     if (slider.y + 10 <= 245) {
                         slider.y = slider.y + 10
@@ -235,28 +275,36 @@ Rectangle {
     Rectangle {
         width: parent.width
         height: 1
-        color: "#aa2f2f2f"
+
         anchors.top: parent.top
-    }
-    
-    Rectangle {
-        width: 1
-        height: parent.height
+        
         color: "#aa2f2f2f"
-        anchors.left: parent.left
     }
     
     Rectangle {
         width: 1
         height: parent.height
-        color: "#aaF6F6F6"
+        
+        anchors.left: parent.left
+        
+        color: "#aa2f2f2f"
+    }
+    
+    Rectangle {
+        width: 1
+        height: parent.height
+        
         anchors.right: parent.right
+        
+        color: "#aaF6F6F6"
     }
     
     Rectangle {
         width: parent.width
         height: 1
-        color: "#aaF6F6F6"
+        
         anchors.bottom: parent.bottom
+        
+        color: "#aaF6F6F6"
     }
 }

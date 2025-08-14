@@ -14,6 +14,9 @@ Rectangle {
     property alias name: nameItem.text
     property alias realName: realItem.text
 
+    property string textColor: "#fff"
+    property int fontSize: 14
+
     function getRandomInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
@@ -73,13 +76,19 @@ Rectangle {
                 Text {
                     id: nameItem
                     text: "Default name, owo"
+                    color: textColor
+                    font.pixelSize: fontSize
                 }
                 Text {
                     id: realItem
                     text: "Default real name, owo"
+                    color: textColor
+                    font.pixelSize: fontSize
                 }
                 Text {
                     text: get_save_type(userid)
+                    color: textColor
+                    font.pixelSize: fontSize
                 }
             }
         }

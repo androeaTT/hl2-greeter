@@ -3,14 +3,15 @@ import QtQuick.Controls
 
 Rectangle {
     id: root 
-    color: "#f7777777"
-    radius: 7
+
     width: 620
     height: 320
 
-    property int basez: 0
+    color: "#f7777777"
+    radius: 7
     z: focused ? basez + 10 : basez
-
+    
+    property int basez: 0
     property alias title: titleItem.text
     property alias closable: close.visible
     property bool focused: false
@@ -19,7 +20,6 @@ Rectangle {
     property alias insideMargin: contentBox.anchors.margins
     default property alias content: contentBox.data
     
-    
     onVisibleChanged: {
         if (root.visible) {
             windowsSurface.visibleWindows++
@@ -27,9 +27,6 @@ Rectangle {
             windowsSurface.visibleWindows--
         }
     }
-    
-    
-
 
     MouseArea {
         z: root.z + 3
@@ -86,6 +83,7 @@ Rectangle {
             anchors.right: parent.right
         }
     }
+    
     MouseArea {
         anchors.fill: parent
         drag.filterChildren: true

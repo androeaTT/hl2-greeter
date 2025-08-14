@@ -7,7 +7,6 @@ Item {
     id: root
 
     property int indexRp: 0
-
     property int selectedPage: 0
 
     TextConstants {
@@ -46,6 +45,7 @@ Item {
 
     Repeater {
         id: mainRepeater
+        
         model: userModel
 
         Text {
