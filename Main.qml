@@ -112,6 +112,18 @@ Item {
         mainMenuButtonBox.visible = true
     }
 
+    function get_username(index) {
+        const role = Qt.UserRole + 1
+        const qtIndex = userModel.index( index, 0 )
+        return userModel.data(qtIndex, role)
+    }
+
+    function get_realName(index) {
+        const role = Qt.UserRole + 2
+        const qtIndex = userModel.index( index, 0 )
+        return userModel.data(qtIndex, role)
+    }
+
     ////////////////////////
     //       Layout       //
     ////////////////////////
@@ -256,14 +268,18 @@ Item {
                     spacing: 20
 
                     Repeater {
+                        id: repeat
                         model: userModel
                             
                         LoadGameUserInstance {
                             required property int index
 
                             userid: index
-                            realName: modelData.realName
-                            name: modelData.name
+                            realName: get_realName(index)
+                            name: get_username(index)
+                            Component.onCompleted: {
+                                console.log("////////////////////////////////OwOname: " + get_realName(index) )
+                            }
                         }
                     }
                 }
