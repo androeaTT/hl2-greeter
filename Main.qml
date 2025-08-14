@@ -88,11 +88,6 @@ Item {
         return Math.floor(Math.random() * (max - min + 1)) + min
     }
 
-    function hoverSound() {
-        hoverPlayer.stop()
-        hoverPlayer.play()
-    }
-
     function buttonClick( buttonId ) {
         clickPlayer.stop()
         clickPlayer.play()
