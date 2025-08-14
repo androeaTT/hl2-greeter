@@ -31,8 +31,8 @@ Rectangle {
     property alias name: nameItem.text
     property alias realName: realItem.text
 
-    property string textColor: "#fff"
-    property int fontSize: 14
+    property string textColor: "#ccc"
+    property int fontSize: 11
 
     function getRandomInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -90,21 +90,40 @@ Rectangle {
             height: parent.height
 
             Column {
+                spacing: 5
+
+                Rectangle { // spacer
+                    color: "transparent"
+                    height: 1
+                    width: 1
+                }
+
                 Text {
                     id: nameItem
+
                     text: "Default name, owo"
                     color: textColor
+
+                    font.weight: 800
+                    font.family: "DejaVu Sans"
                     font.pixelSize: fontSize
                 }
                 Text {
                     id: realItem
+
                     text: "Default real name, owo"
                     color: textColor
+
+                    font.weight: 100
+                    font.family: "DejaVu Sans"
                     font.pixelSize: fontSize
                 }
                 Text {
                     text: get_save_type(userid)
                     color: textColor
+
+                    font.weight: 100
+                    font.family: "DejaVu Sans"
                     font.pixelSize: fontSize
                 }
             }
