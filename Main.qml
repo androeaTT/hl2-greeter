@@ -122,6 +122,8 @@ Item {
     } 
 
     function startLoading() {
+        loadprog.startLoading()
+
         player.stop()
         player.source = getRandomBgVideo()
         player.pause()
@@ -371,7 +373,7 @@ Item {
         }
 
         SourceWindow { // loading bar window
-            id: loadsSoonWindow
+            id: loadsWindow
             
             height: 74
             width: 380
@@ -382,8 +384,11 @@ Item {
             visible: true
             title: "LOADING..."
 
-            ProgressBar {
-                progress: 100
+            LoadingProgressBar {
+                id: loadprog
+
+                visible: true
+
             }
         }
     }

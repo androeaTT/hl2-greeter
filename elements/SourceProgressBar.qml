@@ -41,7 +41,7 @@ Rectangle {
     Row {
         id: contentBox
 
-        height: 16
+        height: 19
         width: root.width - 10
 
         anchors.centerIn: parent
@@ -52,9 +52,12 @@ Rectangle {
             model: { Math.floor(rectCount) }
 
             Rectangle {
-                color: "#fff"
+                anchors.bottom: parent.bottom
+
                 height: 16
                 width: 8
+
+                color: "#fff"
                 visible: true
             }
         }
