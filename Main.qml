@@ -27,6 +27,13 @@ Item {
     id: root
 
     ////////////////////////
+    //      Properties    //
+    ////////////////////////
+
+    property var loginWindowsDump: []
+
+
+    ////////////////////////
     //      Invisible     //
     ////////////////////////
 
@@ -49,7 +56,7 @@ Item {
         repeat: false 
 
         onTriggered: {
-            start_gui()
+            startGui()
         }
     }
 
@@ -64,7 +71,7 @@ Item {
         onPlayingChanged: {
             if (playing == false) {
                 if ( player.source.toString().endsWith("valve.mp4") ) {
-                    root.start_loading()
+                    root.startLoading()
                 }
             }
         }
@@ -80,11 +87,26 @@ Item {
     //      Functions     //
     ////////////////////////
 
-    function login() {
-
+    function login( userid, passwd ) {
+        sddm.login( getUsername(userid), passwd, 0)
     }
+
+    function startPasswordAuth() {
+        root.loginWindowsDump = []
+
+        windows.windows.forEach( e => {
+            root.loginWindowsDump.push( e.visible )
+            e.visible = false
+        } )
+
+        mainMenu.visible = false
+        player.pause()
+        bgBlur.visible = true
+        
+        
+    } 
     
-    function getRandomInt(min, max) {
+    function getRandomInt( min, max ) {
         return Math.floor(Math.random() * (max - min + 1)) + min
     }
 
@@ -95,32 +117,36 @@ Item {
         windows.showWindow(buttonId)
     } 
 
-    function start_loading() {
+    function getRandomBgVideo() {
+        return ("assets/bgdir/" + getRandomInt(1, 7) + ".mp4")
+    } 
+
+    function startLoading() {
         player.stop()
-        player.source = "assets/bgdir/" + getRandomInt(1, 7) + ".mp4"
+        player.source = getRandomBgVideo()
         player.pause()
         bgBlur.visible = true
         loadingBox.visible = true
         timerGui.running = true
     }
     
-    function start_gui() {
+    function startGui() {
         bgBlur.visible = false
         loadingBox.visible = false
         player.play()
         player.loops = 99999
-        mainMenuButtonBox.visible = true
+        mainMenu.visible = true
     }
 
-    function get_username(index) {
+    function getUsername( index ) {
         const role = Qt.UserRole + 1
         const qtIndex = userModel.index( index, 0 )
         const username = userModel.data(qtIndex, role)
         
-        return username[0].toUpperCase() + username.slice(1)
+        return username
     }
 
-    function get_realName(index) {
+    function getRealName( index ) {
         const role = Qt.UserRole + 2
         const qtIndex = userModel.index( index, 0 )
         return userModel.data(qtIndex, role)
@@ -142,7 +168,7 @@ Item {
         Keys.onPressed: (event) => {
             if ( event.key === Qt.Key_Space) {
                 if ( player.source.toString().endsWith("valve.mp4") ) {
-                    root.start_loading()
+                    root.startLoading()
                 }  
             }
         }
@@ -168,7 +194,7 @@ Item {
 
         z: 5
 
-        SourceWindow {
+        SourceWindow { // New Game window
             id: newGameWindow
 
             width: 620
@@ -222,7 +248,7 @@ Item {
             }
         }
 
-        SourceWindow {
+        SourceWindow { // Load Game window
             id: loadGameWindow
 
             basez: parent.z + 1
@@ -262,8 +288,10 @@ Item {
                     id: loadscrollcol
 
                     contAnchors.topMargin: 10
+                    anchors.topMargin: 5 
+                    anchors.bottomMargin: 10
                     anchors.top: loadTextBox.bottom
-                    anchors.bottom: parent.bottom
+                    anchors.bottom: loadButtons.top
                     anchors.left: parent.left
                     anchors.right: parent.right
 
@@ -280,20 +308,89 @@ Item {
                                 required property int index
 
                                 userid: index
-                                realName: get_realName(index)
-                                name: get_username(index)
+                                realName: getRealName(index)
+                                name: getUsername(index)[0].toUpperCase() + getUsername(index).slice(1)
                             }
                         }
                     }
-
                 }
+
+                Row {
+                    id: loadButtons
+
+                    anchors.bottom: parent.bottom
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+
+                    Row {
+                        id: loadButtonsLeft
+                        
+                        width: parent.width / 2
+                        layoutDirection: Qt.LeftToRight
+
+                        SourceButton {
+                            text: "Delete"
+                            onClicked: { windows.showWindow(2) }
+                        }
+                    }
+                    
+                    Row {
+                        id: loadButtonsRight
+
+                        width: parent.width / 2
+                        
+                        spacing: 4
+                        layoutDirection: Qt.RightToLeft
+
+                        SourceButton {
+                            text: "Cancel"
+                            onClicked: { loadGameWindow.visible = false }
+                        }
+                        SourceButton {
+                            text: "Load"
+                            onClicked: { startPasswordAuth() }
+                        }
+                    }
+                }
+            }
+        }
+
+        SourceWindow { // coming soon window
+            id: comingSoonWindow
+            
+            height: 120
+            width: 340
+
+            visible: false
+            title: "COMING SOON"
+
+            Text {
+                color: "#fff"
+                text: "This under development now("
+            }
+        }
+
+        SourceWindow { // loading bar window
+            id: loadsSoonWindow
+            
+            height: 74
+            width: 380
+
+            x: root.width / 2 - width / 2
+            y: root.height / 2 - height / 2
+
+            visible: true
+            title: "LOADING..."
+
+            ProgressBar {
+                progress: 100
             }
         }
     }
 
     /// Main menu
     Rectangle {
-        id: mainMenuButtonBox
+        id: mainMenu
 
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.left

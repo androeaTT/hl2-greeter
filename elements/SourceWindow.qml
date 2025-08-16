@@ -31,6 +31,7 @@ Rectangle {
     property int basez: 0
     property alias title: titleItem.text
     property alias closable: close.visible
+    property alias draggable: dragArea.visible
     property bool focused: false
     property Item windowsSurface: root.parent.parent
     property Item windowsPlace: root.parent
@@ -46,11 +47,16 @@ Rectangle {
     }
 
     MouseArea {
+        id: dragArea
+
         z: root.z + 3
+
         anchors.top: parent.top
         anchors.rightMargin: 25
+
         height: 30
         width: parent.width - 25
+
         drag.target: parent
         drag.axis: Drag.XAndYAxis
         drag.filterChildren: true    
