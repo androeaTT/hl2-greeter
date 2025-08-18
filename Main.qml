@@ -31,6 +31,7 @@ Item {
     ////////////////////////
 
     property var loginWindowsDump: []
+    property int currentLoginUserId
 
 
     ////////////////////////
@@ -91,7 +92,8 @@ Item {
         sddm.login( getUsername(userid), passwd, 0)
     }
 
-    function startPasswordAuth() {
+    function startPasswordAuth( userid ) {
+        currentLoginUserId = userid
         root.loginWindowsDump = []
 
         windows.windows.forEach( e => {
@@ -102,7 +104,14 @@ Item {
         mainMenu.visible = false
         player.pause()
         bgBlur.visible = true
-        
+
+        loadsWindow.visible = true
+        loginLoadBar.setBreak(1, () => {
+            loginLoadBar.pause()
+            loadsWindow.visible = false
+            passwordWindow.visible = true
+        } )
+        loginLoadBar.startLoading()
         
     } 
     
@@ -122,8 +131,6 @@ Item {
     } 
 
     function startLoading() {
-        loadprog.startLoading()
-
         player.stop()
         player.source = getRandomBgVideo()
         player.pause()
@@ -350,7 +357,7 @@ Item {
                         }
                         SourceButton {
                             text: "Load"
-                            onClicked: { startPasswordAuth() }
+                            onClicked: { startPasswordAuth( loadUsers.focusedIndex ) }
                         }
                     }
                 }
@@ -381,13 +388,80 @@ Item {
             x: root.width / 2 - width / 2
             y: root.height / 2 - height / 2
 
-            visible: true
+            visible: false
             title: "LOADING..."
 
             LoadingProgressBar {
-                id: loadprog
+                id: loginLoadBar
 
                 visible: true
+            }
+        }
+
+        SourceWindow { // password field window
+            id: passwordWindow
+            
+            height: 135
+            width: 290
+
+            insideMargin: 10
+
+            x: root.width / 2 - width / 2
+            y: root.height / 2 - height / 2
+
+            visible: false
+            title: "Server require password"
+
+            Column {
+                anchors.fill: parent
+
+                spacing: 5
+
+                Item {
+                    height: 1
+                    width: 1
+                }
+
+                Text {
+                    color: "#fff"
+                    text: "To connect, type password:"
+                }
+
+                SourceInputField {
+                    id: passwordField
+
+                    width: parent.width - 1
+                }
+                
+                Row {
+                    width: parent.width
+
+                    anchors.bottom: parent.bottom
+
+                    spacing: 4
+                    layoutDirection: Qt.RightToLeft
+
+                    SourceButton {
+                        id: cancelPasswordButton
+
+                        text: "Cancel"
+                    }
+                    SourceButton {
+                        id: connectPasswordButton
+
+                        text: "Connect"
+                        
+                        onClicked: {
+                            passwordWindow.visible = false
+                            loadsWindow.visible = true
+
+                            loginLoadBar.setBreak(3, () => {
+                                login(currentLoginUserId, passwordField.text )
+                            })
+                            loginLoadBar.unpause()
+                        }
+                    }
+                }
 
             }
         }

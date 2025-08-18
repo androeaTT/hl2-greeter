@@ -23,17 +23,26 @@ SourceProgressBar {
     id: root
 
     function setBreak( segment, onBreak ) {
-        breakEnabled = true
-        breakSegment = segment
-        breakFunc = onBreak
+        _breakEnabled = true
+        _breakSegment = segment
+        _breakFunc = onBreak
+        console.log("OwO _breakEnabled: " + _breakEnabled + "; OwO _breakSegment: " + _breakSegment + "; OwO _breakSegment: " + _breakFunc )
     }
 
     function startLoading() {
         segmentTimer.running = true
     }
 
+    function pause() {
+        _paused = true
+    }
+    
+    function unpause() {
+        _paused = false
+        rectTimer.restart()
+    }
+
     progress: 0
-    visible: false
 
     signal onLoaded()
 
@@ -41,9 +50,10 @@ SourceProgressBar {
     property int segmentDelay: 500 
     property int segments: 4
 
-    property bool breakEnabled: false
-    property int breakSegment: 0    
-    function breakFunc() {}
+    property bool _breakEnabled: false
+    property int _breakSegment  
+    property var _breakFunc
+    property bool _paused: false
 
     Timer {
         id: segmentTimer
@@ -54,20 +64,21 @@ SourceProgressBar {
 
         onTriggered: {
             if ( count >= segments ) {
-                console.log('OwO end: ' + count)
                 segmentTimer.running = false
             } else {
-                if ( count == breakSegment ) {
-                    if (breakEnabled) {
-                        breakFunc()
+                if ( count == _breakSegment ) {
+                    if (_breakEnabled) {
+                        _breakFunc()
                     }
                 }
                 count ++
-                rectTimer.restart()
-                segmentTimer.restart()
+                if (!_paused) {
+                    rectTimer.restart()
+                }
             }
         }
     }
+
     Timer {
         id: rectTimer
 
@@ -77,11 +88,14 @@ SourceProgressBar {
 
         onTriggered: {
             if ( 100 / segments * segmentTimer.count <= count) {
+                segmentTimer.restart()
                 rectTimer.running = false
             } else {
                 progress++
                 count++
-                rectTimer.restart()
+                if (!_paused) {
+                    rectTimer.restart()
+                }
             }
         }
     }
