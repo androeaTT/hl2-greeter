@@ -16,26 +16,25 @@
 
 
 import QtQuick
+import QtQuick.Controls 
+import QtMultimedia
 
-Rectangle {
+
+Item {
     id: root
 
-    anchors.right: parent.right
-    anchors.bottom: parent.bottom
-    anchors.margins: 20
-        
-    width: 100
-    height: 50
-    z: 3
-        
-    visible: false
-    color: "#000"
-    radius: 10
+    property string src: ""
 
-    Text {
-        anchors.centerIn: parent
-        font.pixelSize: 14
-        color: "#fff"
-        text: "Loading.."
+    Component.onCompleted: {
+        console.log("OwO -_-: " + src)
+        Qt.createQmlObject(`
+            import QtMultimedia
+
+            MediaPlayer {
+                autoPlay: true
+                source: "` + src + `"
+                audioOutput: AudioOutput {}
+            }`, root
+        )
     }
 }

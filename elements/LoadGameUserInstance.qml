@@ -1,5 +1,5 @@
 // Theme for SDDM with Half-Life 2 GUI style
-// Copyright (C) 2025  androeaTT
+// Copyright (C) 2025-2026  androeaTT
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
