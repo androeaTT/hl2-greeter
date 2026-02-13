@@ -46,16 +46,16 @@ Item {
     /// modes
     function startPasswordAuth( userid ) {
         currentLoginUserId = userid
-        root.loginWindowsDump = []
+        loginWindowsDump = []
 
         windows.windows.forEach( e => {
-            root.loginWindowsDump.push( e.visible )
+            loginWindowsDump.push( e.visible )
             e.visible = false
         } )
 
         mainMenu.visible = false
         player.pause()
-        bgBlur.visible = true
+        bgBlur.blur()
 
         loadsWindow.visible = true
         loginLoadBar.setBreak(1, () => {
@@ -76,7 +76,7 @@ Item {
     }
     
     function startGui() {
-        bgBlur.radius = 0
+        bgBlur.unblurLinear()
         loadingBox.visible = false
         player.play()
         player.loops = 99999
@@ -185,19 +185,37 @@ Item {
         }
     }
 
-    FastBlur { // Blur when loading
+    FastBlur { // Blur on loading
         id: bgBlur
 
-        property int inheritRadius: 42
+        function blurLinear(){
+            blurBhv.enabled = true
+            radius = initialRadius
+        }
+        function unblurLinear(){
+            blurBhv.enabled = true
+            radius = 0
+        }
+        function blur(){
+            blurBhv.enabled = false
+            radius = initialRadius
+        }
+        function unblur(){
+            blurBhv.enabled = false
+            radius = 0
+        }
+
+        property int initialRadius: 42
 
         anchors.fill: parent
         z: 2
 
         source: background
         visible: false
-        radius: 42
+        radius: initialRadius
 
         Behavior on radius {
+            id: blurBhv
             NumberAnimation {
                 duration: 500
                 easing.type: Easing.Linear
@@ -215,7 +233,6 @@ Item {
         font.family: "Trebuchet MS"
         font.pixelSize: 32
         text: "PRESS SPACE"
-
     }
     
     LoadingBox { id: loadingBox }
