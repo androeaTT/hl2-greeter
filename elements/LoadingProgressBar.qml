@@ -22,12 +22,20 @@ import QtQuick.Controls
 SourceProgressBar {
     id: root
 
+    function factoryReset(){
+        _breakEnabled = false
+        _paused = false
+        segmentTimer.count = 0
+        rectTimer.count = 0
+        progress = 0
+    }
+
     function setBreak( segment, onBreak ) {
         _breakEnabled = true
         _breakSegment = segment
         _breakFunc = onBreak
-        console.log("OwO _breakEnabled: " + _breakEnabled + "; OwO _breakSegment: " + _breakSegment + "; OwO _breakSegment: " + _breakFunc )
     }
+
 
     function startLoading() {
         segmentTimer.running = true

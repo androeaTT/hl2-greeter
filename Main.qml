@@ -58,13 +58,29 @@ Item {
         bgBlur.blur()
 
         loadsWindow.visible = true
-        loginLoadBar.setBreak(1, () => {
+        loginLoadBar.factoryReset()
+        loginLoadBar.setBreak( 1, () => {
             loginLoadBar.pause()
             loadsWindow.visible = false
             passwordWindow.visible = true
+            passwordField.focus = true
         } )
+
         loginLoadBar.startLoading()
     } 
+
+    function cancelPasswordAuth() {
+        mainMenu.visible = true
+        player.play()
+        bgBlur.unblur()
+
+        windows.windows.forEach( (e, i) => {
+            e.visible = loginWindowsDump[i]
+        } )
+
+        loadsWindow.visible = false
+        passwordWindow.visible = false
+    }
 
     function startLoading() {
         player.stop()
@@ -124,7 +140,7 @@ Item {
         }
     }
 
-    MediaPlayer { //intro and background player
+    MediaPlayer { // intro and background player
         id: player
 
         function getRandomBgVideo() { return ("assets/bgdir/" + getRandomInt(1, 7) + ".mp4") }
@@ -223,7 +239,7 @@ Item {
         }
     }
 
-    Text { //PRESS SPACE label. why? because sddm feels itself like google chrome and mute all autoplay sound
+    Text { // PRESS SPACE label. why? because sddm feels itself like google chrome and mute all autoplay sound
         id: spaceTextItem
 
         anchors.centerIn: parent
@@ -440,7 +456,7 @@ Item {
         SourceWindow { // password field window
             id: passwordWindow
             
-            height: 135
+            height: 150
             width: 290
 
             insideMargin: 10
@@ -466,42 +482,59 @@ Item {
                     text: "To connect, type password:"
                 }
 
-                SourceInputField {
-                    id: passwordField
-
-                    width: parent.width - 1
-                }
-                
-                Row {
+                Item {
                     width: parent.width
+                    height: passwordField.contentHeight + 8
 
-                    anchors.bottom: parent.bottom
+                    SourceInputField {
+                        id: passwordField
 
-                    spacing: 4
-                    layoutDirection: Qt.RightToLeft
+                        anchors.fill: parent
 
-                    SourceButton {
-                        id: cancelPasswordButton
+                        width: parent.width - 1
 
-                        text: "Cancel"
-                    }
-                    SourceButton {
-                        id: connectPasswordButton
-
-                        text: "Connect"
-                        
-                        onClicked: {
-                            passwordWindow.visible = false
-                            loadsWindow.visible = true
-
-                            loginLoadBar.setBreak(3, () => {
-                                login(currentLoginUserId, passwordField.text )
-                            })
-                            loginLoadBar.unpause()
+                        onAccepted:{
+                            connectPasswordButton.clicked()
                         }
                     }
                 }
+                
 
+            }
+
+            Row {
+                width: parent.width
+
+                anchors.bottom: parent.bottom
+
+                spacing: 4
+                layoutDirection: Qt.RightToLeft
+
+                SourceButton {
+                    id: cancelPasswordButton
+
+                    text: "Cancel"
+
+                    onClicked:{
+                        cancelPasswordAuth()
+                    }
+                }
+
+                SourceButton {
+                    id: connectPasswordButton
+
+                    text: "Connect"
+                        
+                    onClicked: {
+                        passwordWindow.visible = false
+                        loadsWindow.visible = true
+
+                        loginLoadBar.setBreak(3, () => {
+                            login(currentLoginUserId, passwordField.text )
+                        })
+                        loginLoadBar.unpause()
+                    }
+                }
             }
         }
     }

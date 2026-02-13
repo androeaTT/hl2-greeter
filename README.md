@@ -1,6 +1,4 @@
-# SDDM Theme Stylized by Half-Life 2 GUI
-
-## This project is not complated, and i'm don't want to finish it. You can send commits, if you want) 
+# Half-Life 2 GUI SDDM Theme
 
 ## Screenshots
 

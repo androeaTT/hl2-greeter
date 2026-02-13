@@ -23,6 +23,11 @@ import QtQuick.Controls
 TextField {
     id: root
 
+    topPadding: 0
+    bottomPadding: 0
+    leftPadding: 4
+    rightPadding: 4 
+
     color: "#fff"
 
     background: Rectangle {
