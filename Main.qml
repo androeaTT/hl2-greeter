@@ -112,13 +112,6 @@ Item {
         id: textConstants
     }
 
-    MediaPlayer { // audio player for button click 
-        id: clickPlayer
-
-        source: "assets/btns/buttonclickrelease.mp3"
-        audioOutput: AudioOutput {}
-    }
-
     Timer { // timer for loading delay 
         id: timerGui
 
@@ -496,81 +489,12 @@ Item {
         }
     }
 
-    Rectangle {// Main menu
+    SourceMainMenu{ // Main menu
         id: mainMenu
+        z: 3
 
-        function buttonClick( buttonId ) {
-            clickPlayer.stop()
-            clickPlayer.play()
-    
+        onButtonClick: function(buttonId){
             windows.showWindow(buttonId)
-        }
-
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.left: parent.left
-        anchors.leftMargin: 80
-        
-        height: buttonsColumn.implicitHeight
-        width: 700
-        z:3
-        
-        visible: false
-        color: "transparent"
-        
-
-        Column {
-            id: buttonsColumn
-
-            anchors.fill: parent
-            
-            spacing: 16
-
-            Image {
-                width: 568
-                height: 42
-
-                source: "assets/menuLogo.png"
-            }
-
-            MainMenuButton {
-                soundEnabled: false
-                text: " "
-            }
-
-            MainMenuButton {
-                text: "NEW GAME"
-
-                onClicked: { mainMenu.buttonClick(0) }
-            }
-
-            MainMenuButton {
-                text: "LOAD GAME"
-
-                onClicked: { mainMenu.buttonClick(1) }
-            }
-
-            MainMenuButton {
-                text: "ACHIEVMENTS"
-
-                onClicked: { mainMenu.buttonClick(2) }
-            }
-
-            MainMenuButton {
-                soundEnabled: false
-                text: " "
-            }
-
-            MainMenuButton {
-                text: "OPTIONS"
-
-                onClicked: { mainMenu.buttonClick(3) }
-            }
-
-            MainMenuButton {
-                text: "QUIT"
-
-                onClicked: { mainMenu.buttonClick(4) }
-            }
         }
     }
 }
