@@ -34,8 +34,78 @@ Item {
     property int currentLoginUserId
 
 
+
+
     ////////////////////////
-    //      Invisible     //
+    //      Functions     //
+    ////////////////////////
+
+    /// random helpers
+    function getRandomInt( min, max ) { return Math.floor(Math.random() * (max - min + 1)) + min }
+
+    /// modes
+    function startPasswordAuth( userid ) {
+        currentLoginUserId = userid
+        root.loginWindowsDump = []
+
+        windows.windows.forEach( e => {
+            root.loginWindowsDump.push( e.visible )
+            e.visible = false
+        } )
+
+        mainMenu.visible = false
+        player.pause()
+        bgBlur.visible = true
+
+        loadsWindow.visible = true
+        loginLoadBar.setBreak(1, () => {
+            loginLoadBar.pause()
+            loadsWindow.visible = false
+            passwordWindow.visible = true
+        } )
+        loginLoadBar.startLoading()
+    } 
+
+    function startLoading() {
+        player.stop()
+        player.source = player.getRandomBgVideo()
+        player.pause()
+        bgBlur.visible = true
+        loadingBox.visible = true
+        timerGui.running = true
+    }
+    
+    function startGui() {
+        bgBlur.radius = 0
+        loadingBox.visible = false
+        player.play()
+        player.loops = 99999
+        mainMenu.visible = true
+    }
+
+    /// Users stuff
+    function getUsername( index ) {
+        const role = Qt.UserRole + 1
+        const qtIndex = userModel.index( index, 0 )
+        const username = userModel.data(qtIndex, role)
+        
+        return username
+    }
+
+    function getRealName( index ) {
+        const role = Qt.UserRole + 2
+        const qtIndex = userModel.index( index, 0 )
+        return userModel.data(qtIndex, role)
+    }
+
+    function login( userid, passwd ) {  
+        sddm.login( getUsername(userid), passwd, 4)  
+    }
+
+
+
+    ////////////////////////
+    //       Backend      //
     ////////////////////////
 
     TextConstants { // sddm stuff
@@ -64,26 +134,28 @@ Item {
     MediaPlayer { //intro and background player
         id: player
 
+        function getRandomBgVideo() { return ("assets/bgdir/" + getRandomInt(1, 7) + ".mp4") }
+
         source: "assets/valve.mp4"
         videoOutput: background
-        autoPlay: true
+        audioOutput: AudioOutput {}
+        autoPlay: false
+
+        property bool isIntro: true
+
+        onSourceChanged: {
+            isIntro = source.toString().endsWith("/valve.mp4")
+        }
 
         onPlayingChanged: {
-            if (playing == true) {
-                if ( player.source.toString().endsWith("valve.mp4") ) {
-                    Qt.createQmlObject( ` 
-                        import 'elements'
-                        SddmAudioPlayer { 
-                            src: '../assets/valve.mp3' 
-                        }
-                        `, root )
-                }
-            } else {
-                if ( player.source.toString().endsWith("valve.mp4") ) {
+            if ( isIntro ) {
+                if (player.position > 300){
                     root.startLoading()
                 }
             }
         }
+
+        
     }
 
     Rectangle { // white corners fix
@@ -93,86 +165,8 @@ Item {
     }
 
     ////////////////////////
-    //      Functions     //
-    ////////////////////////
-
-    function login( userid, passwd ) {
-        sddm.login( getUsername(userid), passwd, 0)
-    }
-
-    function startPasswordAuth( userid ) {
-        currentLoginUserId = userid
-        root.loginWindowsDump = []
-
-        windows.windows.forEach( e => {
-            root.loginWindowsDump.push( e.visible )
-            e.visible = false
-        } )
-
-        mainMenu.visible = false
-        player.pause()
-        bgBlur.visible = true
-
-        loadsWindow.visible = true
-        loginLoadBar.setBreak(1, () => {
-            loginLoadBar.pause()
-            loadsWindow.visible = false
-            passwordWindow.visible = true
-        } )
-        loginLoadBar.startLoading()
-        
-    } 
-    
-    function getRandomInt( min, max ) {
-        return Math.floor(Math.random() * (max - min + 1)) + min
-    }
-
-    function buttonClick( buttonId ) {
-        clickPlayer.stop()
-        clickPlayer.play()
-
-        windows.showWindow(buttonId)
-    } 
-
-    function getRandomBgVideo() {
-        return ("assets/bgdir/" + getRandomInt(1, 7) + ".mp4")
-    } 
-
-    function startLoading() {
-        player.stop()
-        player.source = getRandomBgVideo()
-        player.pause()
-        bgBlur.visible = true
-        loadingBox.visible = true
-        timerGui.running = true
-    }
-    
-    function startGui() {
-        bgBlur.visible = false
-        loadingBox.visible = false
-        player.play()
-        player.loops = 99999
-        mainMenu.visible = true
-    }
-
-    function getUsername( index ) {
-        const role = Qt.UserRole + 1
-        const qtIndex = userModel.index( index, 0 )
-        const username = userModel.data(qtIndex, role)
-        
-        return username
-    }
-
-    function getRealName( index ) {
-        const role = Qt.UserRole + 2
-        const qtIndex = userModel.index( index, 0 )
-        return userModel.data(qtIndex, role)
-    }
-
-    ////////////////////////
     //       Layout       //
     ////////////////////////
-
 
     VideoOutput { // Background video and intro output
         id: background
@@ -183,10 +177,17 @@ Item {
         focus: true
         
         Keys.onPressed: (event) => {
-            if ( event.key === Qt.Key_Space) {
-                if ( player.source.toString().endsWith("valve.mp4") ) {
-                    root.startLoading()
-                }  
+            if ( player.isIntro ) {
+                if ( event.key === Qt.Key_Space ) {
+                    if (player.playing){
+                        if (player.position > 300){
+                            root.startLoading()
+                        }
+                    } else {
+                        player.play()
+                        spaceTextItem.visible = false
+                    }
+                }
             }
         }
     }
@@ -194,19 +195,39 @@ Item {
     FastBlur { // Blur when loading
         id: bgBlur
 
+        property int inheritRadius: 42
+
         anchors.fill: parent
         z: 2
 
         source: background
         visible: false
         radius: 42
+
+        Behavior on radius {
+            NumberAnimation {
+                duration: 500
+                easing.type: Easing.Linear
+            }
+        }
+    }
+
+    Text { //PRESS SPACE label. why? because sddm feels itself like google chrome and mute all autoplay sound
+        id: spaceTextItem
+
+        anchors.centerIn: parent
+        z: 2
+
+        color: "#8d8d8d"
+        font.family: "Trebuchet MS"
+        font.pixelSize: 32
+        text: "PRESS SPACE"
+
     }
     
     LoadingBox { id: loadingBox }
 
-
-    // Windows surface
-    SourceWindowsSurface {
+    SourceWindowsSurface { // Windows surface
         id: windows
 
         z: 5
@@ -475,9 +496,15 @@ Item {
         }
     }
 
-    /// Main menu
-    Rectangle {
+    Rectangle {// Main menu
         id: mainMenu
+
+        function buttonClick( buttonId ) {
+            clickPlayer.stop()
+            clickPlayer.play()
+    
+            windows.showWindow(buttonId)
+        }
 
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.left
@@ -513,19 +540,19 @@ Item {
             MainMenuButton {
                 text: "NEW GAME"
 
-                onClicked: { root.buttonClick(0) }
+                onClicked: { mainMenu.buttonClick(0) }
             }
 
             MainMenuButton {
                 text: "LOAD GAME"
 
-                onClicked: { root.buttonClick(1) }
+                onClicked: { mainMenu.buttonClick(1) }
             }
 
             MainMenuButton {
                 text: "ACHIEVMENTS"
 
-                onClicked: { root.buttonClick(2) }
+                onClicked: { mainMenu.buttonClick(2) }
             }
 
             MainMenuButton {
@@ -536,13 +563,13 @@ Item {
             MainMenuButton {
                 text: "OPTIONS"
 
-                onClicked: { root.buttonClick(3) }
+                onClicked: { mainMenu.buttonClick(3) }
             }
 
             MainMenuButton {
                 text: "QUIT"
 
-                onClicked: { root.buttonClick(4) }
+                onClicked: { mainMenu.buttonClick(4) }
             }
         }
     }

@@ -53,7 +53,7 @@ Rectangle {
         color: hover ? "#d6d6d6" : "#fff"
         font.family: "Trebuchet MS"
         font.pixelSize: 16
-        text: "FURRY BUTTON)"
+        text: "FURBUTTON :3"
     }
 
     MouseArea {

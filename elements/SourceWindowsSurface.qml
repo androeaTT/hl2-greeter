@@ -58,5 +58,11 @@ Item {
         
         color: "#00000000"
         anchors.fill: parent
+
+        Behavior on color{
+            ColorAnimation{
+                duration: 500
+            }
+        }
     }
 }
